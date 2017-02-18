@@ -41,6 +41,7 @@ public class Player : MonoBehaviour {
     public bool Attack { get; set; }
     public bool TakingDamage { get; set; }
     public bool Jump { get; set; }
+    public bool OnStripes { get; set; }
     public bool OnHeart { get; set; }
     public bool OnLadder { get; set; }
     public bool OnGround { get; set; }
@@ -97,13 +98,18 @@ public class Player : MonoBehaviour {
         facingRight = true;
         OnHeart = false;
         OnLadder = false;
+        OnStripes = false;
        
         startPos = transform.position;
     }
 
     private void HandleInput()
     {
-        if (Input.GetKeyDown(KeyCode.Space) && !OnLadder ) { MyAnimator.SetTrigger("jump"); }
+        if (Input.GetKeyDown(KeyCode.Space) && !OnLadder)
+        {
+            MyAnimator.SetTrigger("jump");
+            Jump = true;
+        }
         if (Input.GetKeyDown(KeyCode.Z)) { MyAnimator.SetTrigger("attack"); }
         if (Input.GetKeyDown(KeyCode.X)) { Use(); }
         if (Input.GetKeyDown(KeyCode.O)) { healthStat.CurrentVal -= 10; }
@@ -144,13 +150,12 @@ public class Player : MonoBehaviour {
             healthStat.CurrentVal -= 10;
             if(!IsDead)
             {
-                MyAnimator.SetTrigger("takingDamage");
                 immortal = true;
                 StartCoroutine(IndicateImmortal());
                 yield return new WaitForSeconds(immortalTime);
                 immortal = false;
             }
-            else if(IsDead)
+            else
             {
                 MyAnimator.SetTrigger("dead");
                 Death();
@@ -197,8 +202,9 @@ public class Player : MonoBehaviour {
     private void HandleMovement(float horizontal, float vertical)
     {
         if (MyRigidbody.velocity.y < 0) { MyAnimator.SetBool("land", true); }
-        if(!Attack) { MyRigidbody.velocity = new Vector3(horizontal * movementspeed, MyRigidbody.velocity.y, 0); }
-        if(Jump && MyRigidbody.velocity.y == 0 && !OnLadder) { MyRigidbody.AddForce(new Vector3(0, jumpForce, 0)); }
+        if(!Attack && !OnStripes) { MyRigidbody.velocity = new Vector3(horizontal * movementspeed, MyRigidbody.velocity.y, 0); }
+        if (!Attack && OnStripes) { MyRigidbody.velocity = new Vector3(horizontal * movementspeed * 3, MyRigidbody.velocity.y, 0); }
+        if (Jump && MyRigidbody.velocity.y == 0 && !OnLadder) { MyRigidbody.AddForce(new Vector3(0, jumpForce, 0)); }
         if (OnLadder)
         {
             MyAnimator.speed = vertical != 0 ? Mathf.Abs(vertical) : Mathf.Abs(horizontal);
@@ -229,17 +235,17 @@ public class Player : MonoBehaviour {
     private void OnTriggerEnter2D(Collider2D collider)
     {
         if (collider.tag == "Useable") { useable = collider.GetComponent<IUseable>(); }
-        if (collider.tag == "Heart")
-        {
-            healthStat.CurrentVal = healthStat.MaxVal;
-        }
+        if (collider.tag == "Heart"){ healthStat.CurrentVal = healthStat.MaxVal; }
+        if (collider.tag == "CheckPoint") { startPos = collider.transform.position; }
+        if (collider.tag == "Stripes") { OnStripes = true; }
+        if (collider.tag == "Bouncy") { MyRigidbody.AddForce(new Vector3(0, 700, 0)); }
         if (damageSources.Contains(collider.tag)) { StartCoroutine(TakeDamage()); }
     }
-
 
     private void OnTriggerExit2D(Collider2D collider)
     {
         if(collider.tag == "Useable") { useable = null; }
+        if (collider.tag == "Stripes") { OnStripes = false; }
     }
 
 }

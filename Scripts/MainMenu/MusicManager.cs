@@ -26,12 +26,16 @@ public class MusicManager : MonoBehaviour {
         // Sets the music to the current level variable
         AudioClip thisLevelMusic = levelMusicChangeArray[level];
         // If there is music for the current level
-        if(thisLevelMusic)
+        if (thisLevelMusic)
         {
             // set the audio to play and loop the current  level music
             audioSource.clip = thisLevelMusic;
             audioSource.loop = true;
             audioSource.Play();
+        }
+        else if (level == 2 || level ==3)
+        {
+            audioSource.loop = true;
         }
         else
         {

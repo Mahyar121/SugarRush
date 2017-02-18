@@ -33,6 +33,6 @@ public class OptionsController : MonoBehaviour {
     // Default button
     public void SetDefaults()
     {
-        volumeSlider.value = 0.7f;
+        volumeSlider.value = 0.5f;
     }
 }
