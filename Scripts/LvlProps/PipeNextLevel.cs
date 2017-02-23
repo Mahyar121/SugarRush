@@ -1,16 +1,23 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class PipeNextLevel : MonoBehaviour {
 
-    [SerializeField] private LevelManager levelManager;
+    [SerializeField] private int skiplevel;
 
+    private int level;
+
+    private void Start()
+    {
+        level = SceneManager.GetActiveScene().buildIndex;
+    }
     private void OnTriggerEnter2D(Collider2D collider)
     {
         if (collider.tag == "Player")
         {
-            levelManager.LoadLevel("03_Level2");
+            SceneManager.LoadScene(level + skiplevel); // skips the level 1 boss and jumps the player to level 2
         }
     }
 }

@@ -2,6 +2,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public delegate void DeadEventHandler();
 
@@ -11,6 +13,7 @@ public class Player : MonoBehaviour {
 
     // SerializeField lets the game designer edit values in the editor
     [SerializeField] private Stats healthStat;
+    [SerializeField] private Text textLives;
     [SerializeField] private EdgeCollider2D swordCollider;
     [SerializeField] private Transform[] groundPoints;
     [SerializeField] private List<string> damageSources;
@@ -31,6 +34,7 @@ public class Player : MonoBehaviour {
     private bool isDead;
     private bool immortal = false;
     private bool facingRight;
+    private int lives = 3;
     private static Player instance;
 
     // Properties
@@ -95,6 +99,7 @@ public class Player : MonoBehaviour {
         MyAnimator = GetComponent<Animator>();
         spriteRenderer = GetComponent<SpriteRenderer>();
         MyRigidbody = GetComponent<Rigidbody2D>();
+        textLives.text = lives.ToString();
         facingRight = true;
         OnHeart = false;
         OnLadder = false;
@@ -136,16 +141,25 @@ public class Player : MonoBehaviour {
 
     private void Death()
     {
-        Jump = false;
-        MyRigidbody.velocity = Vector3.zero;
-        MyAnimator.SetTrigger("idle");
-        healthStat.CurrentVal = healthStat.MaxVal;
-        transform.position = startPos;
+        lives--;
+        textLives.text = lives.ToString();
+        if (lives > 0)
+        {
+            Jump = false;
+            MyRigidbody.velocity = Vector3.zero;
+            MyAnimator.SetTrigger("idle");
+            healthStat.CurrentVal = healthStat.MaxVal;
+            transform.position = startPos;
+        }
+        else // load game over page :(  (T-T)
+        {
+            SceneManager.LoadScene(10);
+        }
     }
 
     private IEnumerator TakeDamage()
     {
-        if(!immortal)
+        if(healthStat.CurrentVal > 0 && !immortal)
         {
             healthStat.CurrentVal -= 10;
             if(!IsDead)
@@ -155,7 +169,7 @@ public class Player : MonoBehaviour {
                 yield return new WaitForSeconds(immortalTime);
                 immortal = false;
             }
-            else
+            else if (healthStat.CurrentVal <= 0)
             {
                 MyAnimator.SetTrigger("dead");
                 Death();
@@ -203,7 +217,7 @@ public class Player : MonoBehaviour {
     {
         if (MyRigidbody.velocity.y < 0) { MyAnimator.SetBool("land", true); }
         if(!Attack && !OnStripes) { MyRigidbody.velocity = new Vector3(horizontal * movementspeed, MyRigidbody.velocity.y, 0); }
-        if (!Attack && OnStripes) { MyRigidbody.velocity = new Vector3(horizontal * movementspeed * 3, MyRigidbody.velocity.y, 0); }
+        if (!Attack && OnStripes) { MyRigidbody.velocity = new Vector3(horizontal * movementspeed * 3.2f, MyRigidbody.velocity.y, 0); }
         if (Jump && MyRigidbody.velocity.y == 0 && !OnLadder) { MyRigidbody.AddForce(new Vector3(0, jumpForce, 0)); }
         if (OnLadder)
         {
