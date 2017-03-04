@@ -23,7 +23,7 @@ public class MeleeMob : MonoBehaviour {
     public EdgeCollider2D MeleeAttackCollider { get { return meleeAttackCollider; } }
     public bool Attack { get; set; }
     public bool TakingDamage { get; set; }
-    public bool IsDead { get { return healthStat.CurrentVal <= 0; } }
+    public bool IsDead { get { return healthStat.CurrentHp <= 0; } }
     public bool InMeleeRange
     {
         get
@@ -72,13 +72,13 @@ public class MeleeMob : MonoBehaviour {
         if (Target != null)
         {
             float xDirection = Target.transform.position.x - transform.position.x;
-            if (xDirection > 0 && facingRight || xDirection < 0 && !facingRight) { ChangeDirection(); }
+            if (xDirection > 0 && !facingRight || xDirection < 0 && facingRight) { ChangeDirection(); }
         }
     }
 
     public IEnumerator TakeDamage()
     {
-        healthStat.CurrentVal -= 10;
+        healthStat.CurrentHp -= 10;
         if(!IsDead)
         {
             spriteRenderer.enabled = false;

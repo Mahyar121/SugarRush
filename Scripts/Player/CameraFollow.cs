@@ -6,6 +6,7 @@ public class CameraFollow : MonoBehaviour {
 
     [SerializeField] private float xMin, xMax, yMin, yMax;
     private Transform target;
+    public Transform Target { get { return target; }  set { target = value; } }
 
     private void Start()
     {

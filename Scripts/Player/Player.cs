@@ -24,7 +24,7 @@ public class Player : MonoBehaviour {
     [SerializeField] private float YFallingPoint;
     [SerializeField] private float jumpForce;
     [SerializeField] private float climbSpeed;
-    
+
 
     // private variables
     private Vector3 startPos;
@@ -34,7 +34,9 @@ public class Player : MonoBehaviour {
     private bool isDead;
     private bool immortal = false;
     private bool facingRight;
+    private bool hasDeathDelayStarted = false;
     private int lives = 3;
+    private float currentTime = 0f;
     private static Player instance;
 
     // Properties
@@ -49,12 +51,14 @@ public class Player : MonoBehaviour {
     public bool OnHeart { get; set; }
     public bool OnLadder { get; set; }
     public bool OnGround { get; set; }
+    public bool OnGreenBlock { get; set; }
+    public bool OnRedBlock { get; set; }
     public bool IsDead
     {
         get
         {
-            if (healthStat.CurrentVal <= 0) { OnDead(); }
-            return healthStat.CurrentVal <= 0;
+            if (healthStat.CurrentHp <= 0) { OnDead(); }
+            return healthStat.CurrentHp <= 0;
         }
     }
     public static Player Instance
@@ -76,15 +80,15 @@ public class Player : MonoBehaviour {
     private void Start()
     {
         InitializingStartValues();
-
     }
 	
 	// Update is called once per frame
 	private void Update()
     {
+        // REFACTOR
+        if (healthStat.CurrentHp <= 0) { MyAnimator.SetTrigger("death"); }
         FallingOffMapHandler();
-        HandleInput();
-        
+        HandleInput();  
 	}
 
     // better FPS for physics
@@ -104,7 +108,6 @@ public class Player : MonoBehaviour {
         OnHeart = false;
         OnLadder = false;
         OnStripes = false;
-       
         startPos = transform.position;
     }
 
@@ -117,10 +120,9 @@ public class Player : MonoBehaviour {
         }
         if (Input.GetKeyDown(KeyCode.Z)) { MyAnimator.SetTrigger("attack"); }
         if (Input.GetKeyDown(KeyCode.X)) { Use(); }
-        if (Input.GetKeyDown(KeyCode.O)) { healthStat.CurrentVal -= 10; }
-        if (Input.GetKeyDown(KeyCode.P)) { healthStat.CurrentVal += 10; }
 
     }
+      
 
     private void MovingFlippingPlayer()
     {
@@ -139,7 +141,7 @@ public class Player : MonoBehaviour {
         if (Dead != null) { Dead(); }
     }
 
-    private void Death()
+    public void Death()
     {
         lives--;
         textLives.text = lives.ToString();
@@ -148,20 +150,20 @@ public class Player : MonoBehaviour {
             Jump = false;
             MyRigidbody.velocity = Vector3.zero;
             MyAnimator.SetTrigger("idle");
-            healthStat.CurrentVal = healthStat.MaxVal;
+            healthStat.CurrentHp = healthStat.MaxHp;
             transform.position = startPos;
         }
         else // load game over page :(  (T-T)
         {
-            SceneManager.LoadScene(10);
+            SceneManager.LoadScene(14);
         }
     }
 
     private IEnumerator TakeDamage()
     {
-        if(healthStat.CurrentVal > 0 && !immortal)
+        if(healthStat.CurrentHp > 0 && !immortal)
         {
-            healthStat.CurrentVal -= 10;
+            healthStat.CurrentHp -= 10;
             if(!IsDead)
             {
                 immortal = true;
@@ -169,10 +171,10 @@ public class Player : MonoBehaviour {
                 yield return new WaitForSeconds(immortalTime);
                 immortal = false;
             }
-            else if (healthStat.CurrentVal <= 0)
+            else if (healthStat.CurrentHp <= 0)
             {
-                MyAnimator.SetTrigger("dead");
-                Death();
+                MyAnimator.SetTrigger("death");
+                Death();    
             }
         }
     }
@@ -249,11 +251,24 @@ public class Player : MonoBehaviour {
     private void OnTriggerEnter2D(Collider2D collider)
     {
         if (collider.tag == "Useable") { useable = collider.GetComponent<IUseable>(); }
-        if (collider.tag == "Heart"){ healthStat.CurrentVal = healthStat.MaxVal; }
+        if (collider.tag == "Heart"){ healthStat.CurrentHp = healthStat.MaxHp; }
         if (collider.tag == "CheckPoint") { startPos = collider.transform.position; }
         if (collider.tag == "Stripes") { OnStripes = true; }
         if (collider.tag == "Bouncy") { MyRigidbody.AddForce(new Vector3(0, 700, 0)); }
+        if (collider.tag == "BossOne") { Death(); }
+        if (collider.tag == "RandomBlock")
+        {
+            if (OnGreenBlock)
+            {
+                healthStat.CurrentHp += 20f;
+            }
+            if (OnRedBlock)
+            {
+                if (healthStat.CurrentHp > 0) { healthStat.CurrentHp -= 20f; }
+            }
+        }
         if (damageSources.Contains(collider.tag)) { StartCoroutine(TakeDamage()); }
+      
     }
 
     private void OnTriggerExit2D(Collider2D collider)

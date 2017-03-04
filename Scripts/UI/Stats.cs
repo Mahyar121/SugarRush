@@ -8,32 +8,32 @@ using UnityEngine.UI;
 public class Stats {
 
     [SerializeField] private BarController bar;
-    [SerializeField] private float maxVal;
-    [SerializeField] private float currentVal;
+    [SerializeField] private float maxHp;
+    [SerializeField] private float currentHp;
     
-    public float CurrentVal
+    public float CurrentHp
     {
-        get { return currentVal; }
+        get { return currentHp; }
         set
         {
-            this.currentVal = Mathf.Clamp(value, 0, MaxVal);
-            bar.Value = currentVal;
+            this.currentHp = Mathf.Clamp(value, 0, MaxHp);
+            bar.Value = currentHp;
         }
     }
 
-    public float MaxVal
+    public float MaxHp
     {
-        get { return maxVal; }
+        get { return maxHp; }
         set
         {
-            this.maxVal = value;
-            bar.MaxValue = maxVal;
+            this.maxHp = value;
+            bar.MaxValue = maxHp;
         }
     }
     
     public void Initialize()
     {
-        this.MaxVal = maxVal;
-        this.CurrentVal = currentVal;
+        this.MaxHp = maxHp;
+        this.CurrentHp = currentHp;
     }
 }
