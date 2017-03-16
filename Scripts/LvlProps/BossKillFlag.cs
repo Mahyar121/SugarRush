@@ -19,7 +19,7 @@ public class BossKillFlag : MonoBehaviour {
 
     }
 
-    private void LateUpdate()
+    private void Update()
     {
         if (isPlayerOn)
         {
@@ -41,9 +41,13 @@ public class BossKillFlag : MonoBehaviour {
 
     private void Delay()
     {
-        if (Time.time > time + 2.5f)
+        if (SceneManager.GetActiveScene().buildIndex == 8) // LEVEL 1
         {
-            SceneManager.LoadScene(9); // Loads level 2
+            if (Time.time > time + 2.3f)
+            {
+                SceneManager.LoadScene(9); // Loads level 2
+            }
         }
+        
     }
 }

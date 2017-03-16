@@ -155,7 +155,7 @@ public class Player : MonoBehaviour {
         }
         else // load game over page :(  (T-T)
         {
-            SceneManager.LoadScene(14);
+            SceneManager.LoadScene(15);
         }
     }
 

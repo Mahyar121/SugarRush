@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 public class ControlsManager : MonoBehaviour {
 
-    [SerializeField] private Text Up, Down, Left, Right, Attack, Block, Action, Menu;
+    [SerializeField] private Text Up, Down, Left, Right, Attack, Jump, Action, Menu;
 	// Use this for initialization
 	void Start () {
 
@@ -14,8 +14,8 @@ public class ControlsManager : MonoBehaviour {
         Left.text = "Left Arrow";
         Right.text = "Right Arrow";
         Attack.text = "Z";
-        Block.text = "X";
-        Action.text = "C";
+        Jump.text = "SpaceBar";
+        Action.text = "X";
         Menu.text = "P";
 	}
 	
