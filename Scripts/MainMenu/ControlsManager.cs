@@ -2,12 +2,15 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class ControlsManager : MonoBehaviour {
 
+    private GameObject[] controlObjects;
+
     [SerializeField] private Text Up, Down, Left, Right, Attack, Jump, Action, Menu;
 	// Use this for initialization
-	void Start () {
+	private void Start () {
 
         Up.text = "Up Arrow";
         Down.text = "Down Arrow";
@@ -18,5 +21,21 @@ public class ControlsManager : MonoBehaviour {
         Action.text = "X";
         Menu.text = "P";
 	}
+
+    public void BackButtonHandler()
+    {
+        if (SceneManager.GetActiveScene().buildIndex == 3)
+        {
+            SceneManager.LoadScene(1);
+        }
+        else
+        {
+            controlObjects = GameObject.FindGameObjectsWithTag("ShowControls");
+            foreach (GameObject objects in controlObjects)
+            {
+                objects.SetActive(false);
+            }
+        }
+    }
 	
 }

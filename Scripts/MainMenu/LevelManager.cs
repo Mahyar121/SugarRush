@@ -9,13 +9,15 @@ public class LevelManager : MonoBehaviour {
 
     private void Start()
     {
-        if(autoLoadNextLevel > 0) { Invoke("LoadNextLevel", autoLoadNextLevel); }
+        
+        if (autoLoadNextLevel > 0) { Invoke("LoadNextLevel", autoLoadNextLevel); }
     }
 
 
     // different ways to load levels, I chose to load the level by name
     public void LoadLevel(string name)
     {
+        Time.timeScale = 1;
         SceneManager.LoadScene(name);
     }
 

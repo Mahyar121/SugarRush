@@ -13,7 +13,6 @@ public class Player : MonoBehaviour {
 
     // SerializeField lets the game designer edit values in the editor
     [SerializeField] private Stats healthStat;
-    [SerializeField] private Text textLives;
     [SerializeField] private EdgeCollider2D swordCollider;
     [SerializeField] private Transform[] groundPoints;
     [SerializeField] private List<string> damageSources;
@@ -31,12 +30,12 @@ public class Player : MonoBehaviour {
     private SpriteRenderer spriteRenderer;
     private IUseable useable;
     private Transform currentLocation;
+    private GameObject[] pauseObjects;
+    private GameObject[] controlObjects;
     private bool isDead;
     private bool immortal = false;
     private bool facingRight;
     private bool hasDeathDelayStarted = false;
-    private int lives = 3;
-    private float currentTime = 0f;
     private static Player instance;
 
     // Properties
@@ -103,12 +102,15 @@ public class Player : MonoBehaviour {
         MyAnimator = GetComponent<Animator>();
         spriteRenderer = GetComponent<SpriteRenderer>();
         MyRigidbody = GetComponent<Rigidbody2D>();
-        textLives.text = lives.ToString();
         facingRight = true;
         OnHeart = false;
         OnLadder = false;
         OnStripes = false;
         startPos = transform.position;
+        pauseObjects = GameObject.FindGameObjectsWithTag("ShowOnPause");
+        hidePaused();
+        controlObjects = GameObject.FindGameObjectsWithTag("ShowControls");
+        HideControls();
     }
 
     private void HandleInput()
@@ -120,9 +122,59 @@ public class Player : MonoBehaviour {
         }
         if (Input.GetKeyDown(KeyCode.Z)) { MyAnimator.SetTrigger("attack"); }
         if (Input.GetKeyDown(KeyCode.X)) { Use(); }
+        if (Input.GetKeyDown(KeyCode.P))
+        {
+            if (Time.timeScale == 1)
+            {
+                Time.timeScale = 0;
+                showPaused();
+            }
+            else if(Time.timeScale == 0)
+            {
+                UnPause();
+            }
+        }
 
     }
-      
+
+    public void UnPause()
+    {
+        Time.timeScale = 1;
+        hidePaused();
+    }
+
+    private void showPaused()
+    {
+        foreach(GameObject objects in pauseObjects)
+        {
+            objects.SetActive(true);
+        }
+    }
+    
+    private void hidePaused()
+    {
+        foreach (GameObject objects in pauseObjects)
+        {
+            objects.SetActive(false);
+        }
+    }
+
+    public void ShowControls()
+    {
+        foreach (GameObject objects in controlObjects)
+        {
+            objects.SetActive(true);
+        }
+    }
+
+    private void HideControls()
+    {
+        foreach (GameObject objects in controlObjects)
+        {
+            objects.SetActive(false);
+        }
+    }
+
 
     private void MovingFlippingPlayer()
     {
@@ -143,20 +195,12 @@ public class Player : MonoBehaviour {
 
     public void Death()
     {
-        lives--;
-        textLives.text = lives.ToString();
-        if (lives > 0)
-        {
-            Jump = false;
-            MyRigidbody.velocity = Vector3.zero;
-            MyAnimator.SetTrigger("idle");
-            healthStat.CurrentHp = healthStat.MaxHp;
-            transform.position = startPos;
-        }
-        else // load game over page :(  (T-T)
-        {
-            SceneManager.LoadScene(15);
-        }
+       Jump = false;
+       MyRigidbody.velocity = Vector3.zero;
+       MyAnimator.SetTrigger("idle");
+       healthStat.CurrentHp = healthStat.MaxHp;
+       transform.position = startPos;
+        
     }
 
     private IEnumerator TakeDamage()
