@@ -14,12 +14,12 @@ public class BossThreeKillFlag : MonoBehaviour {
             if (lastOne == 0)
             {
                 nextFlag.SetActive(true);
-                LevelThreeBoss.Instance.HealthStat.CurrentHp -= 16.7f;
+                LevelThreeBoss.Instance.HealthStat.CurrentHp -= 20f;
                 Destroy(gameObject);
             }
             else
             { 
-                LevelThreeBoss.Instance.HealthStat.CurrentHp -= 16.7f;
+                LevelThreeBoss.Instance.HealthStat.CurrentHp -= 20f;
                 Destroy(gameObject);
             }
            

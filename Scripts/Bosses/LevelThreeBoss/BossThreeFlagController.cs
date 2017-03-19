@@ -27,7 +27,8 @@ public class BossThreeFlagController : MonoBehaviour {
         }
         else if (flags[0] == null && flags[1] == null && flags[2] != null)
         {
-            LevelThreeBoss.Instance.MyAnimator.SetTrigger("SecondAirPatrol");
+           LevelThreeBoss.Instance.MyAnimator.SetTrigger("SecondAirPatrol");
+
         }
         else if (flags[0] == null && flags[1] == null && flags[2] == null)
         {

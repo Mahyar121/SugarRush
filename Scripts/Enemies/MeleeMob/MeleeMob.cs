@@ -89,6 +89,7 @@ public class MeleeMob : MonoBehaviour {
         else
         {
             MyAnimator.SetTrigger("death");
+            gameObject.GetComponent<BoxCollider2D>().enabled = false;
             yield return new WaitForSeconds(3);
             Death();
             yield return null;

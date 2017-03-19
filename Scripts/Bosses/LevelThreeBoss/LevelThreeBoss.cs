@@ -7,8 +7,6 @@ public class LevelThreeBoss : MonoBehaviour {
 
     [SerializeField] private Stats healthStat;
     [SerializeField] private float movementSpeed;
-    [SerializeField] private Transform leftEdge;
-    [SerializeField] private Transform rightEdge;
 
     private Vector3 startPosition;
     private bool facingRight;
@@ -42,11 +40,6 @@ public class LevelThreeBoss : MonoBehaviour {
         }
 	}
 
-    private void OnTriggerEnter2D(Collider2D collider)
-    {
-        if (collider.tag == "Edge") { ChangeDirection(); }
-    }
-
     private void Initialization()
     {
         time = 0f;
@@ -56,20 +49,6 @@ public class LevelThreeBoss : MonoBehaviour {
         healthStat.Initialize();
     }
           
-    private void ChangeDirection()
-    {
-        // save current mob's canvas before the mob changes direction, and then turn it off
-        Transform temp = transform.FindChild("MeleeMobCanvas").transform;
-        Vector3 after = temp.position;
-        temp.SetParent(null);
-        // once the mob changes direction
-        facingRight = !facingRight;
-        transform.localScale = new Vector3(transform.localScale.x * -1, transform.localScale.y, transform.localScale.z);
-        // once the mob does change direction, lets turn back on the canvas
-        temp.SetParent(transform);
-        temp.position = after;
-    }
-    
     private bool IsDead()
     {
         return healthStat.CurrentHp <= 0f ? true : false;
